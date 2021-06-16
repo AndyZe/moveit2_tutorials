@@ -361,6 +361,12 @@ int main(int argc, char** argv)
   success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   RCLCPP_INFO(LOGGER, "Visualizing plan 5 (with no obstacles) %s", success ? "" : "FAILED");
 
+  RCLCPP_ERROR(LOGGER, "Prepare to press Enter to stop the robot!");
+  prompt("Press 'ENTER' to execute");
+  move_group.asyncExecute(my_plan);
+  prompt("Press 'Enter' to stop motion");
+  move_group.stop();
+
   visual_tools.deleteAllMarkers();
   visual_tools.publishText(text_pose, "Clear Goal", rvt::WHITE, rvt::XLARGE);
   visual_tools.publishAxisLabeled(another_pose, "goal");
