@@ -67,11 +67,11 @@
 #define KEYCODE_R 0x72
 
 // Some constants used in the Servo Teleop demo
-const std::string TWIST_TOPIC = "/servo_server/delta_twist_cmds";
-const std::string JOINT_TOPIC = "/servo_server/delta_joint_cmds";
+const std::string TWIST_TOPIC = "/servo_service/delta_twist_cmds";
+const std::string JOINT_TOPIC = "/servo_service/delta_joint_cmds";
 const size_t ROS_QUEUE_SIZE = 10;
-const std::string EEF_FRAME_ID = "panda_hand";
-const std::string BASE_FRAME_ID = "panda_link0";
+const std::string EEF_FRAME_ID = "tool0";
+const std::string BASE_FRAME_ID = "base_link";
 
 // A class for reading the key inputs from the terminal
 class KeyboardReader
@@ -205,32 +205,32 @@ int KeyboardServo::keyLoop()
     {
       case KEYCODE_LEFT:
         RCLCPP_DEBUG(nh_->get_logger(), "LEFT");
-        twist_msg->twist.linear.y = -0.2;
+        twist_msg->twist.linear.y = -0.05;
         publish_twist = true;
         break;
       case KEYCODE_RIGHT:
         RCLCPP_DEBUG(nh_->get_logger(), "RIGHT");
-        twist_msg->twist.linear.y = 0.2;
+        twist_msg->twist.linear.y = 0.05;
         publish_twist = true;
         break;
       case KEYCODE_UP:
         RCLCPP_DEBUG(nh_->get_logger(), "UP");
-        twist_msg->twist.linear.x = 0.2;
+        twist_msg->twist.linear.x = 0.05;
         publish_twist = true;
         break;
       case KEYCODE_DOWN:
         RCLCPP_DEBUG(nh_->get_logger(), "DOWN");
-        twist_msg->twist.linear.x = -0.2;
+        twist_msg->twist.linear.x = -0.05;
         publish_twist = true;
         break;
       case KEYCODE_PERIOD:
         RCLCPP_DEBUG(nh_->get_logger(), "PERIOD");
-        twist_msg->twist.linear.z = -0.2;
+        twist_msg->twist.linear.z = -0.05;
         publish_twist = true;
         break;
       case KEYCODE_SEMICOLON:
         RCLCPP_DEBUG(nh_->get_logger(), "SEMICOLON");
-        twist_msg->twist.linear.z = 0.2;
+        twist_msg->twist.linear.z = 0.05;
         publish_twist = true;
         break;
       case KEYCODE_E:
