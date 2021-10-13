@@ -88,7 +88,7 @@ def generate_launch_description():
     for controller in ["panda_arm_controller", "joint_state_broadcaster"]:
         load_controllers += [
             ExecuteProcess(
-                cmd=["ros2 run controller_manager spawner.py {}".format(controller)],
+                cmd=["ros2 run controller_manager spawner {}".format(controller)],
                 shell=True,
                 output="screen",
             )
@@ -115,26 +115,23 @@ def generate_launch_description():
             ),
             ComposableNode(
                 package="moveit_servo",
-                plugin="moveit_servo::ServoServer",
+                plugin="moveit_servo::ServoNode",
                 name="servo_server",
                 parameters=[
                     servo_params,
                     robot_description,
                     robot_description_semantic,
                 ],
-                extra_arguments=[{"use_intra_process_comms": True}],
             ),
             ComposableNode(
                 package="moveit_servo",
                 plugin="moveit_servo::JoyToServoPub",
                 name="controller_to_servo_node",
-                extra_arguments=[{"use_intra_process_comms": True}],
             ),
             ComposableNode(
                 package="joy",
                 plugin="joy::Joy",
                 name="joy_node",
-                extra_arguments=[{"use_intra_process_comms": True}],
             ),
         ],
         output="screen",

@@ -17,7 +17,7 @@ If you haven't already done so, make sure you've completed the steps in `Getting
 
 Launching a Standalone Servo Node
 ---------------------------------
-MoveIt Servo provides a component node :code:`moveit_servo::ServoServer` which allows you to send commands via ROS topics. The commands can come from anywhere, such as a joystick, keyboard, or other controller.
+MoveIt Servo provides a component node :code:`moveit_servo::ServoNode` which allows you to send commands via ROS topics. The commands can come from anywhere, such as a joystick, keyboard, or other controller.
 
 This demo was written for an Xbox 1 controller, but can be easily modified to use any controller compatible with the `Joy package <https://index.ros.org/p/joy/#foxy>`_ by modifying the `joystick_servo_example.cpp file <https://github.com/ros-planning/moveit2/blob/main/moveit_ros/moveit_servo/src/teleop_demo/joystick_servo_example.cpp>`_
 
