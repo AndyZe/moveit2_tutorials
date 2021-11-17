@@ -10,7 +10,7 @@ Hybrid Planning enables you to (re)plan and execute robot motions online with Mo
 
 What is Hybrid Planning?
 ------------------------
-Hybrid Planning means using a (slower) global motion planner in combination with a (faster) local motion planner to enable a robot to solve different tasks online and in dynamic environments.
+Hybrid Planning uses a (slower) global motion planner in combination with a (faster) local motion planner to enable a robot to solve different tasks online and in dynamic environments.
 Typically, the global motion planner is used to create an initial motion plan offline and to re-plan it if the global solution gets invalidated. The local planner adapts the global solution to local constraints and reacts immediately to changes in the environment. More detailed information on *Hybrid Planning* can be found for example in this article (TODO: Link article once it is published).
 
 The architecture that enables *Hybrid Planning* in MoveIt 2 can be seen below:
@@ -18,9 +18,9 @@ The architecture that enables *Hybrid Planning* in MoveIt 2 can be seen below:
 .. image:: images/hybrid_planning_architecture.png
    :width: 700px
 
-The *Hybrid Planning Manager* provides an API for *Hybrid Planning request* 's, implements the high-level planning logic and coordinates both planners and their interaction.
-Global planning requests are responded by the *Global Planner Component* which solves a given planning problem and publishes the solution. The *Local Planner Component* processes incoming global trajectory updates and solves each iteration the current local planning problem.
-Main advantages of using the architecture are:
+The *Hybrid Planning Manager* provides an API for *Hybrid Planning requests*, implements the high-level planning logic and coordinates both planners and their interaction.
+Global planning requests are responded by the *Global Planner Component* which solves a given planning problem and publishes the solution. The *Local Planner Component* processes incoming global trajectory updates and solves the local planning problem at each iteration.
+The main advantages of using the architecture are:
 
 - Global and local constrained motion planning problems can be handled separately
 - Online motion planning is possible with the local planner
