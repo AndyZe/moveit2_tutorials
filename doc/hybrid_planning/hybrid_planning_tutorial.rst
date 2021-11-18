@@ -32,13 +32,13 @@ If you haven't already done so, make sure you've completed the steps in `Getting
 
 To start the hybrid planning demo simply run: ::
 
-  ros2 launch moveit2_tutorials hybrid_planning_tutorial.launch.py
+  ros2 launch moveit_hybrid_planning hybrid_planning.launch.py
 
 You should see a similar behavior as in the example GIF above without the replanning.
 
 To interact with the architecture you simply need to send a *Hybrid Planning Request* to an action server offered by the *Hybrid Planning Manager* as seen in the :codedir:`hybrid_planning_test_node <hybrid_planning/src/hybrid_planning_test_node.cpp#L176>`.
 
-Lets change this behavior such that the architecture replans the invalidated trajectory. To do so, just change the *planner_logic_plugin* by replacing the plugin name in the :codedir:`demo configuration <hybrid_planning/config/hybrid_planning_manager.yaml>` with "moveit_hybrid_planning/ReplanInvalidatedTrajectory" and rebuild the package : ::
+Let's change this behavior such that the architecture replans the invalidated trajectory. To do so, just change the *planner_logic_plugin* by replacing the plugin name in the :codedir:`demo configuration <hybrid_planning/config/hybrid_planning_manager.yaml>` with "moveit_hybrid_planning/ReplanInvalidatedTrajectory" and rebuild the package : ::
 
    colcon build --packages-select moveit2_tutorials
 
@@ -85,8 +85,6 @@ To include the Hybrid Planning Architecture into you project you need to add a *
         ],
         output="screen",
     )
-
-An example launch file can be found in the :codedir:`tutorial's files <hybrid_planning/launch/hybrid_planning_tutorial.launch.py>`. If you copy&paste it don't forget to remove the :codedir:`Test node <hybrid_planning/launch/hybrid_planning_tutorial.launch.py#L180>` that implements the demo from above!
 
 Customizing the Hybrid Planning Architecture
 --------------------------------------------
