@@ -32,7 +32,7 @@ If you haven't already done so, make sure you've completed the steps in `Getting
 
 To start the hybrid planning demo simply run: ::
 
-  ros2 launch moveit_hybrid_planning hybrid_planning.launch.py
+  ros2 launch moveit_hybrid_planning hybrid_planning_demo.launch.py
 
 You should see a similar behavior as in the example GIF above without the replanning.
 
