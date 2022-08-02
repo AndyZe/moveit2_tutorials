@@ -19,7 +19,8 @@ int main(int argc, char** argv)
   executor.add_node(node);
   auto spinner = std::thread([&executor]() { executor.spin(); });
 
-  moveit::planning_interface::MoveGroupInterface move_group_interface(node, "panda_arm");
+  auto mgi_node = rclcpp::Node::make_shared("move_group_interface", node_options);
+  moveit::planning_interface::MoveGroupInterface move_group_interface(mgi_node, "panda_arm");
   auto moveit_visual_tools =
       moveit_visual_tools::MoveItVisualTools{ node, "panda_link0", rviz_visual_tools::RVIZ_MARKER_TOPIC,
                                               move_group_interface.getRobotModel() };
@@ -101,8 +102,8 @@ int main(int argc, char** argv)
   moveit_visual_tools.prompt(
       "Press 'Next' in the RvizVisualToolsGui window to continue to the planar constraint example");
 
-  // Clear the path constraints and markers for the next example
-  reset_demo();
+  // // Clear the path constraints and markers for the next example
+  // reset_demo();
 
   // // In the second problem we plan with the end-effector constrained to a plane.
   // // We need to create a pose goal that lies in this plane.
@@ -160,7 +161,7 @@ int main(int argc, char** argv)
   moveit_visual_tools.prompt(
       "Press 'next' in the RvizVisualToolsGui window to continue to the linear constraint example");
 
-  reset_demo();
+  // reset_demo();
 
   // // We can also plan along a line. We can use the same pose as last time.
   // target_pose = get_relative_pose(0.0, 0.3, -0.3);
@@ -199,7 +200,7 @@ int main(int argc, char** argv)
 
   moveit_visual_tools.prompt(
       "Press 'Next' in the RvizVisualToolsGui window to continue to the orientation constraint example");
-  reset_demo();
+  // reset_demo();
 
   // Finally, we can place constraints on orientation.
   // Set the target pose to be the other side of the robot
@@ -222,46 +223,20 @@ int main(int argc, char** argv)
   move_group_interface.setPoseTarget(target_pose);
 
   moveit::planning_interface::MoveGroupInterface::Plan plan;
-  auto success = (move_group_interface.plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
-  RCLCPP_INFO(LOGGER, "Plan with orientation constraint %s", success ? "" : "FAILED");
 
-  moveit_visual_tools.prompt("Press 'Next' in the RvizVisualToolsGui window to try mixed_constraints");
-  reset_demo();
+  // Plan multiple times, printing the duration of each plan
+  typedef std::chrono::high_resolution_clock Clock;
+  for (size_t attempt = 0; attempt < 100; ++attempt)
+  {
+    RCLCPP_ERROR_STREAM(LOGGER, "Attempt: " << attempt);
+    auto start_time = Clock::now();
+    auto success = (move_group_interface.plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
+    auto end_time = Clock::now();
+    RCLCPP_INFO_STREAM(LOGGER, "Planning time: "
+                                   << std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time).count());
+  }
 
-  // Finally, we can place constraints on orientation.
-  // Use the target pose from the previous example
-  target_pose = get_relative_pose(-0.6, 0.1, 0);
-
-  // Reuse the orientation constraint, and make a new box constraint
-  box.dimensions = { 1.0, 0.6, 1.0 };
-  box_constraint.constraint_region.primitives[0] = box;
-
-  box_pose.position.x = 0;
-  box_pose.position.y = -0.1;
-  box_pose.position.z = current_pose.pose.position.z;
-  box_constraint.constraint_region.primitive_poses[0] = box_pose;
-  box_constraint.weight = 1.0;
-
-  // Visualize the box constraint
-  Eigen::Vector3d new_box_point_1(box_pose.position.x - box.dimensions[0] / 2,
-                                  box_pose.position.y - box.dimensions[1] / 2,
-                                  box_pose.position.z - box.dimensions[2] / 2);
-  Eigen::Vector3d new_box_point_2(box_pose.position.x + box.dimensions[0] / 2,
-                                  box_pose.position.y + box.dimensions[1] / 2,
-                                  box_pose.position.z + box.dimensions[2] / 2);
-  moveit_msgs::msg::Constraints mixed_constraints;
-  mixed_constraints.position_constraints.emplace_back(box_constraint);
-  mixed_constraints.orientation_constraints.emplace_back(orientation_constraint);
-  moveit_visual_tools.publishCuboid(new_box_point_1, new_box_point_2, rviz_visual_tools::TRANSLUCENT_DARK);
-  moveit_visual_tools.trigger();
-
-  move_group_interface.setPathConstraints(mixed_constraints);
-  move_group_interface.setPoseTarget(target_pose);
-  move_group_interface.setPlanningTime(20.0);
-
-  success = (move_group_interface.plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
-  success = (move_group_interface.plan(plan) == moveit::core::MoveItErrorCode::SUCCESS);
-  RCLCPP_INFO(LOGGER, "Plan with mixed constraint %s", success ? "" : "FAILED");
+  moveit_visual_tools.prompt("Press 'Next' in the RvizVisualToolsGui window to finish");
 
   // Done!
   moveit_visual_tools.prompt("Press 'Next' in the RvizVisualToolsGui window to clear the markers");

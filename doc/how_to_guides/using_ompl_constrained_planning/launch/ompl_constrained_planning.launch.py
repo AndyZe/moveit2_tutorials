@@ -15,26 +15,6 @@ def generate_launch_description():
         .to_moveit_configs()
     )
 
-    # Set planning pipeline parameters
-    moveit_config.planning_pipelines["ompl"]["panda_arm"][
-        "enforce_constrained_state_space"
-    ] = True
-    moveit_config.planning_pipelines["ompl"]["panda_arm"][
-        "default_planner_config"
-    ] = "PRMstarkConfigDefault"
-    moveit_config.planning_pipelines["ompl"]["panda_arm"][
-        "projection_evaluator"
-    ] = "joints(panda_joint1,panda_joint2)"
-    moveit_config.planning_pipelines["ompl"]["panda_arm_hand"][
-        "enforce_constrained_state_space"
-    ] = True
-    moveit_config.planning_pipelines["ompl"]["panda_arm_hand"][
-        "default_planner_config"
-    ] = "PRMstarkConfigDefault"
-    moveit_config.planning_pipelines["ompl"]["panda_arm_hand"][
-        "projection_evaluator"
-    ] = "joints(panda_joint1,panda_joint2)"
-
     # Start the actual move_group node/action server
     run_move_group_node = Node(
         package="moveit_ros_move_group",
