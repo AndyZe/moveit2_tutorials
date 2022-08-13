@@ -100,6 +100,15 @@ int main(int argc, char** argv)
   planning_components->setStartStateToCurrentState();
   planning_components->setGoal("extended");
 
+  // Visualize the collision obstacle
+  // bool publishCollisionCuboid(const Eigen::Isometry3d& pose, const Eigen::Vector3d& size, const std::string& name,
+  //                            const rviz_visual_tools::colors& color)
+  geometry_msgs::msg::Vector3 cube_size;
+  cube_size.x = box.dimensions.at(0);
+  cube_size.y = box.dimensions.at(1);
+  cube_size.z = box.dimensions.at(2);
+  visual_tools.publishCollisionCuboid(box_pose, cube_size, std::string("collision_cube"), rvt::BLUE);
+
   auto plan_solution5 = planning_components->plan();
   if (plan_solution5)
   {
