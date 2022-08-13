@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include <rclcpp/rclcpp.hpp>
 #include <memory>
 // MoveitCpp
@@ -112,7 +114,12 @@ int main(int argc, char** argv)
   target_pose1.pose.position.z = 0.5;
   planning_components->setGoal(target_pose1, "panda_link8");
 
+  typedef std::chrono::high_resolution_clock Clock;
+  auto t1 = Clock::now();
   auto plan_solution5 = planning_components->plan();
+  auto t2 = Clock::now();
+  RCLCPP_ERROR_STREAM(LOGGER, std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count());
+
   if (plan_solution5)
   {
     visual_tools.publishText(text_pose, "Planning_Around_Collision_Object", rvt::WHITE, rvt::XLARGE);
