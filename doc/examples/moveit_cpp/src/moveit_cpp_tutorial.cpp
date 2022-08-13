@@ -61,6 +61,7 @@ int main(int argc, char** argv)
   // and trajectories in RViz as well as debugging tools such as step-by-step introspection of a script
   moveit_visual_tools::MoveItVisualTools visual_tools(node, "panda_link0", "moveit_cpp_tutorial",
                                                       moveit_cpp_ptr->getPlanningSceneMonitor());
+
   visual_tools.deleteAllMarkers();
   visual_tools.loadRemoteControl();
 
@@ -81,12 +82,12 @@ int main(int argc, char** argv)
 
   shape_msgs::msg::SolidPrimitive box;
   box.type = box.BOX;
-  box.dimensions = { 0.1, 0.4, 0.1 };
+  box.dimensions = { 0.4, 0.01, 0.01 };
 
   geometry_msgs::msg::Pose box_pose;
   box_pose.position.x = 0.4;
-  box_pose.position.y = 0.0;
-  box_pose.position.z = 1.0;
+  box_pose.position.y = -0.15;
+  box_pose.position.z = 0.6;
 
   collision_object.primitives.push_back(box);
   collision_object.primitive_poses.push_back(box_pose);
@@ -97,17 +98,19 @@ int main(int argc, char** argv)
     planning_scene_monitor::LockedPlanningSceneRW scene(moveit_cpp_ptr->getPlanningSceneMonitor());
     scene->processCollisionObjectMsg(collision_object);
   }  // Unlock PlanningScene
-  planning_components->setStartStateToCurrentState();
-  planning_components->setGoal("extended");
 
-  // Visualize the collision obstacle
-  // bool publishCollisionCuboid(const Eigen::Isometry3d& pose, const Eigen::Vector3d& size, const std::string& name,
-  //                            const rviz_visual_tools::colors& color)
-  geometry_msgs::msg::Vector3 cube_size;
-  cube_size.x = box.dimensions.at(0);
-  cube_size.y = box.dimensions.at(1);
-  cube_size.z = box.dimensions.at(2);
-  visual_tools.publishCollisionCuboid(box_pose, cube_size, std::string("collision_cube"), rvt::BLUE);
+  // Planning start and goal
+  planning_components->setStartStateToCurrentState();
+  geometry_msgs::msg::PoseStamped target_pose1;
+  target_pose1.header.frame_id = "panda_link0";
+  target_pose1.pose.orientation.x = 0.924;
+  target_pose1.pose.orientation.y = -0.382;
+  target_pose1.pose.orientation.z = 0;
+  target_pose1.pose.orientation.w = 0;
+  target_pose1.pose.position.x = 0.28;
+  target_pose1.pose.position.y = -0.4;
+  target_pose1.pose.position.z = 0.5;
+  planning_components->setGoal(target_pose1, "panda_link8");
 
   auto plan_solution5 = planning_components->plan();
   if (plan_solution5)
