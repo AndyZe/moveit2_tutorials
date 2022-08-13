@@ -118,9 +118,56 @@ int main(int argc, char** argv)
   auto t1 = Clock::now();
   auto plan_solution5 = planning_components->plan();
   auto t2 = Clock::now();
-  RCLCPP_ERROR_STREAM(LOGGER, std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count());
+  RCLCPP_WARN_STREAM(LOGGER, "Planning time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+                                               << " ms");
 
   if (plan_solution5)
+  {
+    visual_tools.publishText(text_pose, "Planning_Around_Collision_Object", rvt::WHITE, rvt::XLARGE);
+    visual_tools.publishTrajectoryLine(plan_solution5.trajectory, joint_model_group_ptr);
+    visual_tools.trigger();
+
+    /* Uncomment if you want to execute the plan */
+    /* planning_components->execute(); // Execute the plan */
+  }
+
+  // SECOND BOX
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to plan around the next obstacle");
+  visual_tools.deleteAllMarkers();
+  visual_tools.trigger();
+
+  collision_object.id = "box2";
+  box.dimensions = { 0.01, 0.4, 0.01 };
+  box_pose.position.x = 0.4;
+  box_pose.position.y = 0.0;
+  box_pose.position.z = 0.6;
+  collision_object.primitives.push_back(box);
+  collision_object.primitive_poses.push_back(box_pose);
+  collision_object.operation = collision_object.ADD;
+  // Add object to planning scene
+  {  // Lock PlanningScene
+    planning_scene_monitor::LockedPlanningSceneRW scene(moveit_cpp_ptr->getPlanningSceneMonitor());
+    scene->processCollisionObjectMsg(collision_object);
+  }  // Unlock PlanningScene
+
+  // Add object to planning scene
+  {  // Lock PlanningScene
+    planning_scene_monitor::LockedPlanningSceneRW scene(moveit_cpp_ptr->getPlanningSceneMonitor());
+    scene->processCollisionObjectMsg(collision_object);
+  }  // Unlock PlanningScene
+
+  target_pose1.pose.position.x = 0.6;
+  target_pose1.pose.position.y = 0.0;
+  target_pose1.pose.position.z = 0.5;
+  planning_components->setGoal(target_pose1, "panda_link8");
+
+  auto t3 = Clock::now();
+  auto plan_solution6 = planning_components->plan();
+  auto t4 = Clock::now();
+  RCLCPP_WARN_STREAM(LOGGER, "Planning time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count()
+                                               << " ms");
+
+  if (plan_solution6)
   {
     visual_tools.publishText(text_pose, "Planning_Around_Collision_Object", rvt::WHITE, rvt::XLARGE);
     visual_tools.publishTrajectoryLine(plan_solution5.trajectory, joint_model_group_ptr);
