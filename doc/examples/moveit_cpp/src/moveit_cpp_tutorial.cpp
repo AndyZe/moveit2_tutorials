@@ -7,6 +7,7 @@
 #include <moveit/moveit_cpp/planning_component.h>
 
 #include <geometry_msgs/msg/point_stamped.h>
+#include <geometric_shapes/shape_operations.h>
 
 #include <moveit_visual_tools/moveit_visual_tools.h>
 
@@ -80,19 +81,24 @@ int main(int argc, char** argv)
   // First we create the collision object
   moveit_msgs::msg::CollisionObject collision_object;
   collision_object.header.frame_id = "panda_link0";
-  collision_object.id = "box";
-
-  shape_msgs::msg::SolidPrimitive box;
-  box.type = box.BOX;
-  box.dimensions = { 0.4, 0.01, 0.01 };
-
-  geometry_msgs::msg::Pose box_pose;
-  box_pose.position.x = 0.4;
-  box_pose.position.y = -0.15;
-  box_pose.position.z = 0.6;
-
-  collision_object.primitives.push_back(box);
-  collision_object.primitive_poses.push_back(box_pose);
+  collision_object.id = "vines";
+  Eigen::Vector3d stl_scale(1, 1, 1);
+  shapes::Mesh* m = shapes::createMeshFromResource("file:///home/andy/ws_ros2/src/moveit2_tutorials/doc/examples/moveit_cpp/meshes/vines.stl", stl_scale);
+  shape_msgs::msg::Mesh mesh;
+  shapes::ShapeMsg mesh_msg;  
+  shapes::constructMsgFromShape(m, mesh_msg);
+  mesh = boost::get<shape_msgs::msg::Mesh>(mesh_msg);
+  collision_object.meshes.resize(1);
+  collision_object.mesh_poses.resize(1);
+  collision_object.meshes[0] = mesh;
+  collision_object.header.frame_id = "world";
+  collision_object.mesh_poses[0].position.x = 0.0;
+  collision_object.mesh_poses[0].position.y = 0.0;
+  collision_object.mesh_poses[0].position.z = 0.0;
+  collision_object.mesh_poses[0].orientation.w = 1.0; 
+  collision_object.mesh_poses[0].orientation.x = 0.0; 
+  collision_object.mesh_poses[0].orientation.y = 0.0;
+  collision_object.mesh_poses[0].orientation.z = 0.0;
   collision_object.operation = collision_object.ADD;
 
   // Add object to planning scene
@@ -122,52 +128,6 @@ int main(int argc, char** argv)
                                                << " ms");
 
   if (plan_solution5)
-  {
-    visual_tools.publishText(text_pose, "Planning_Around_Collision_Object", rvt::WHITE, rvt::XLARGE);
-    visual_tools.publishTrajectoryLine(plan_solution5.trajectory, joint_model_group_ptr);
-    visual_tools.trigger();
-
-    /* Uncomment if you want to execute the plan */
-    /* planning_components->execute(); // Execute the plan */
-  }
-
-  // SECOND BOX
-  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to plan around the next obstacle");
-  visual_tools.deleteAllMarkers();
-  visual_tools.trigger();
-
-  collision_object.id = "box2";
-  box.dimensions = { 0.01, 0.4, 0.01 };
-  box_pose.position.x = 0.4;
-  box_pose.position.y = 0.0;
-  box_pose.position.z = 0.6;
-  collision_object.primitives.push_back(box);
-  collision_object.primitive_poses.push_back(box_pose);
-  collision_object.operation = collision_object.ADD;
-  // Add object to planning scene
-  {  // Lock PlanningScene
-    planning_scene_monitor::LockedPlanningSceneRW scene(moveit_cpp_ptr->getPlanningSceneMonitor());
-    scene->processCollisionObjectMsg(collision_object);
-  }  // Unlock PlanningScene
-
-  // Add object to planning scene
-  {  // Lock PlanningScene
-    planning_scene_monitor::LockedPlanningSceneRW scene(moveit_cpp_ptr->getPlanningSceneMonitor());
-    scene->processCollisionObjectMsg(collision_object);
-  }  // Unlock PlanningScene
-
-  target_pose1.pose.position.x = 0.6;
-  target_pose1.pose.position.y = 0.0;
-  target_pose1.pose.position.z = 0.5;
-  planning_components->setGoal(target_pose1, "panda_link8");
-
-  auto t3 = Clock::now();
-  auto plan_solution6 = planning_components->plan();
-  auto t4 = Clock::now();
-  RCLCPP_WARN_STREAM(LOGGER, "Planning time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3).count()
-                                               << " ms");
-
-  if (plan_solution6)
   {
     visual_tools.publishText(text_pose, "Planning_Around_Collision_Object", rvt::WHITE, rvt::XLARGE);
     visual_tools.publishTrajectoryLine(plan_solution5.trajectory, joint_model_group_ptr);
