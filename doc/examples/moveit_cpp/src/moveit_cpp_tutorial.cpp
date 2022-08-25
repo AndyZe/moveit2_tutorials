@@ -82,7 +82,7 @@ int main(int argc, char** argv)
   moveit_msgs::msg::CollisionObject collision_object;
   collision_object.header.frame_id = "panda_link0";
   collision_object.id = "vines";
-  Eigen::Vector3d stl_scale(1, 1, 1);
+  Eigen::Vector3d stl_scale(0.5, 0.5, 0.5);
   shapes::Mesh* m = shapes::createMeshFromResource("file:///home/andy/ws_ros2/src/moveit2_tutorials/doc/examples/moveit_cpp/meshes/vines.stl", stl_scale);
   shape_msgs::msg::Mesh mesh;
   shapes::ShapeMsg mesh_msg;  
@@ -92,9 +92,9 @@ int main(int argc, char** argv)
   collision_object.mesh_poses.resize(1);
   collision_object.meshes[0] = mesh;
   collision_object.header.frame_id = "world";
-  collision_object.mesh_poses[0].position.x = 0.0;
+  collision_object.mesh_poses[0].position.x = 0.2;
   collision_object.mesh_poses[0].position.y = 0.0;
-  collision_object.mesh_poses[0].position.z = 0.0;
+  collision_object.mesh_poses[0].position.z = 0.2;
   collision_object.mesh_poses[0].orientation.w = 1.0; 
   collision_object.mesh_poses[0].orientation.x = 0.0; 
   collision_object.mesh_poses[0].orientation.y = 0.0;
@@ -111,10 +111,10 @@ int main(int argc, char** argv)
   planning_components->setStartStateToCurrentState();
   geometry_msgs::msg::PoseStamped target_pose1;
   target_pose1.header.frame_id = "panda_link0";
-  target_pose1.pose.orientation.x = 0.924;
-  target_pose1.pose.orientation.y = -0.382;
+  target_pose1.pose.orientation.x = 0;
+  target_pose1.pose.orientation.y = 0.7071;
   target_pose1.pose.orientation.z = 0;
-  target_pose1.pose.orientation.w = 0;
+  target_pose1.pose.orientation.w = 0.7071;
   target_pose1.pose.position.x = 0.28;
   target_pose1.pose.position.y = -0.4;
   target_pose1.pose.position.z = 0.5;
