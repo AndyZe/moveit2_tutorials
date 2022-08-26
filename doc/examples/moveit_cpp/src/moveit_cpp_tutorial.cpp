@@ -92,9 +92,9 @@ int main(int argc, char** argv)
   collision_object.mesh_poses.resize(1);
   collision_object.meshes[0] = mesh;
   collision_object.header.frame_id = "world";
-  collision_object.mesh_poses[0].position.x = 0.2;
+  collision_object.mesh_poses[0].position.x = 0.35;
   collision_object.mesh_poses[0].position.y = 0.0;
-  collision_object.mesh_poses[0].position.z = 0.2;
+  collision_object.mesh_poses[0].position.z = 0.4;
   collision_object.mesh_poses[0].orientation.w = 1.0; 
   collision_object.mesh_poses[0].orientation.x = 0.0; 
   collision_object.mesh_poses[0].orientation.y = 0.0;
@@ -110,32 +110,85 @@ int main(int argc, char** argv)
   // Planning start and goal
   planning_components->setStartStateToCurrentState();
   geometry_msgs::msg::PoseStamped target_pose1;
-  target_pose1.header.frame_id = "panda_link0";
-  target_pose1.pose.orientation.x = 0;
-  target_pose1.pose.orientation.y = 0.7071;
-  target_pose1.pose.orientation.z = 0;
-  target_pose1.pose.orientation.w = 0.7071;
+  target_pose1.header.frame_id = "world";
+  target_pose1.pose.orientation.x = 0.003;
+  target_pose1.pose.orientation.y = 0.710;
+  target_pose1.pose.orientation.z = 0.002;
+  target_pose1.pose.orientation.w = 0.704;
   target_pose1.pose.position.x = 0.28;
   target_pose1.pose.position.y = -0.4;
   target_pose1.pose.position.z = 0.5;
   planning_components->setGoal(target_pose1, "panda_link8");
 
-  typedef std::chrono::high_resolution_clock Clock;
-  auto t1 = Clock::now();
-  auto plan_solution5 = planning_components->plan();
-  auto t2 = Clock::now();
-  RCLCPP_WARN_STREAM(LOGGER, "Planning time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-                                               << " ms");
+  // Lambda for planning and execution
+  auto plan_with_timer = [&]() {
+    typedef std::chrono::high_resolution_clock Clock;
+    auto t1 = Clock::now();
+    auto plan_solution = planning_components->plan();
+    auto t2 = Clock::now();
+    RCLCPP_WARN_STREAM(LOGGER, "Planning time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+                                                << " ms");
+    if (plan_solution)
+    {
+      visual_tools.publishText(text_pose, "Planning_Around_Collision_Object", rvt::WHITE, rvt::XLARGE);
+      visual_tools.publishTrajectoryLine(plan_solution.trajectory, joint_model_group_ptr);
+      visual_tools.trigger();
 
-  if (plan_solution5)
-  {
-    visual_tools.publishText(text_pose, "Planning_Around_Collision_Object", rvt::WHITE, rvt::XLARGE);
-    visual_tools.publishTrajectoryLine(plan_solution5.trajectory, joint_model_group_ptr);
-    visual_tools.trigger();
+      planning_components->execute();
+    }
+  };
 
-    /* Uncomment if you want to execute the plan */
-    /* planning_components->execute(); // Execute the plan */
-  }
+  plan_with_timer();
+
+  target_pose1.pose.orientation.x = 0.051;
+  target_pose1.pose.orientation.y = 0.746;
+  target_pose1.pose.orientation.z = 0.08;
+  target_pose1.pose.orientation.w = 0.659;
+  target_pose1.pose.position.x = 0.31;
+  target_pose1.pose.position.y = -0.409;
+  target_pose1.pose.position.z = 0.392;
+  planning_components->setGoal(target_pose1, "panda_link8");
+  plan_with_timer();
+
+  target_pose1.pose.orientation.x = -0.3;
+  target_pose1.pose.orientation.y = 0.772;
+  target_pose1.pose.orientation.z = -0.038;
+  target_pose1.pose.orientation.w = 0.559;
+  target_pose1.pose.position.x = 0.291;
+  target_pose1.pose.position.y = -0.238;
+  target_pose1.pose.position.z = 0.566;
+  planning_components->setGoal(target_pose1, "panda_link8");
+  plan_with_timer();
+
+  target_pose1.pose.orientation.x = -0.063;
+  target_pose1.pose.orientation.y = 0.902;
+  target_pose1.pose.orientation.z = 0.256;
+  target_pose1.pose.orientation.w = 0.341;
+  target_pose1.pose.position.x = 0.301;
+  target_pose1.pose.position.y = -0.204;
+  target_pose1.pose.position.z = 0.540;
+  planning_components->setGoal(target_pose1, "panda_link8");
+  plan_with_timer();
+
+  target_pose1.pose.orientation.x = -0.172;
+  target_pose1.pose.orientation.y = 0.738;
+  target_pose1.pose.orientation.z = -0.178;
+  target_pose1.pose.orientation.w = 0.627;
+  target_pose1.pose.position.x = 0.358;
+  target_pose1.pose.position.y = -0.106;
+  target_pose1.pose.position.z = 0.785;
+  planning_components->setGoal(target_pose1, "panda_link8");
+  plan_with_timer();
+
+  target_pose1.pose.orientation.x = 0.766;
+  target_pose1.pose.orientation.y = -0.008;
+  target_pose1.pose.orientation.z = 0.641;
+  target_pose1.pose.orientation.w = 0.033;
+  target_pose1.pose.position.x = 0.283;
+  target_pose1.pose.position.y = -0.024;
+  target_pose1.pose.position.z = 0.532;
+  planning_components->setGoal(target_pose1, "panda_link8");
+  plan_with_timer();
 
   // END_TUTORIAL
   visual_tools.prompt("Press 'next' to end the demo");
